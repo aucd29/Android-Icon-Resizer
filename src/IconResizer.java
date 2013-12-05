@@ -17,11 +17,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.imgscalr.Scalr;
 
 public class IconResizer {
-
     private JFrame frmAndroidIconResizer;
     private JTextField filePath;
     private JTextField folderPath;
     private JButton folderButton;
+    private Config cfg;
 
     /**
      * Launch the application.
@@ -31,6 +31,7 @@ public class IconResizer {
             @Override
             public void run() {
                 try {
+
                     IconResizer window = new IconResizer();
                     window.frmAndroidIconResizer.setVisible(true);
                 } catch (Exception e) {
@@ -51,6 +52,8 @@ public class IconResizer {
      * Initialize the contents of the frame.
      */
     private void initialize() {
+        cfg = new Config();
+
         frmAndroidIconResizer = new JFrame();
         frmAndroidIconResizer.setTitle("Android Icon Resizer");
         frmAndroidIconResizer.setBounds(100, 100, 329, 300);
@@ -68,8 +71,7 @@ public class IconResizer {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 JFileChooser fileChooser = new JFileChooser();
-                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(
-                        "PNG Icon", "png"));
+                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Icon", "png"));
                 fileChooser.setDialogTitle("PNG 형태의 아이콘을 선택하세요");
                 int returnVal = fileChooser.showOpenDialog(fileChooser);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -102,6 +104,7 @@ public class IconResizer {
                 }
             }
         });
+
         folderButton.setBounds(227, 118, 74, 29);
         frmAndroidIconResizer.getContentPane().add(folderButton);
 
@@ -122,8 +125,7 @@ public class IconResizer {
         btnGenerate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!filePath.getText().isEmpty()
-                        && !folderPath.getText().isEmpty()) {
+                if (!filePath.getText().isEmpty() && !folderPath.getText().isEmpty()) {
                     File imageFile = new File(filePath.getText());
                     String dirPath = folderPath.getText();
                     if (imageFile.exists()) {
@@ -133,44 +135,48 @@ public class IconResizer {
                             // Use createResizedCopy method to create resized
                             // BufferedImage
                             BufferedImage myImage = ImageIO.read(imageFile);
-                            BufferedImage xxhdpi = createResizedCopy(myImage,
-                                    144, 144);
-                            BufferedImage xhdpi = createResizedCopy(myImage,
-                                    96, 96);
-                            BufferedImage hdpi = createResizedCopy(myImage, 72,
-                                    72);
-                            BufferedImage mdpi = createResizedCopy(myImage, 48,
-                                    48);
-                            BufferedImage ldpi = createResizedCopy(myImage, 36,
-                                    36);
 
-                            // Create output files
-                            File xxhdpiFile = new File(dirPath
-                                    + "/drawable-xxhdpi/ic_launcher.png");
-                            File xhdpiFile = new File(dirPath
-                                    + "/drawable-xhdpi/ic_launcher.png");
-                            File hdpiFile = new File(dirPath
-                                    + "/drawable-hdpi/ic_launcher.png");
-                            File mdpiFile = new File(dirPath
-                                    + "/drawable-mdpi/ic_launcher.png");
-                            File ldpiFile = new File(dirPath
-                                    + "/drawable-ldpi/ic_launcher.png");
+                            for (String key : cfg.iconType.keySet()) {
+                                int size = cfg.iconType.get(key);
 
-                            lblMessage.setText("이미지 생성중...");
+                                BufferedImage resizedIcon = createResizedCopy(myImage, size, size);
 
-                            // Create directories if they do not exist
-                            xxhdpiFile.mkdirs();
-                            xhdpiFile.mkdirs();
-                            hdpiFile.mkdirs();
-                            mdpiFile.mkdirs();
-                            ldpiFile.mkdirs();
+                                File fp = new File(dirPath + "/drawable-" + key + "/" + cfg.iconName);
+                                fp.mkdirs();
 
-                            // Write bitmaps to files
-                            ImageIO.write(xxhdpi, "PNG", xxhdpiFile);
-                            ImageIO.write(xhdpi, "PNG", xhdpiFile);
-                            ImageIO.write(hdpi, "PNG", hdpiFile);
-                            ImageIO.write(mdpi, "PNG", mdpiFile);
-                            ImageIO.write(ldpi, "PNG", ldpiFile);
+                                lblMessage.setText("이미지 생성중...");
+                                ImageIO.write(resizedIcon, "PNG", fp);
+                            }
+
+                            //
+                            //                            BufferedImage xxhdpi = createResizedCopy(myImage, 144, 144);
+                            //                            BufferedImage xhdpi  = createResizedCopy(myImage, 96, 96);
+                            //                            BufferedImage hdpi   = createResizedCopy(myImage, 72, 72);
+                            //                            BufferedImage mdpi   = createResizedCopy(myImage, 48, 48);
+                            //                            BufferedImage ldpi   = createResizedCopy(myImage, 36, 36);
+                            //
+                            //                            // Create output files
+                            //                            File xxhdpiFile = new File(dirPath + "/drawable-xxhdpi/ic_launcher.png");
+                            //                            File xhdpiFile = new File(dirPath + "/drawable-xhdpi/ic_launcher.png");
+                            //                            File hdpiFile = new File(dirPath + "/drawable-hdpi/ic_launcher.png");
+                            //                            File mdpiFile = new File(dirPath + "/drawable-mdpi/ic_launcher.png");
+                            //                            File ldpiFile = new File(dirPath + "/drawable-ldpi/ic_launcher.png");
+                            //
+                            //                            lblMessage.setText("이미지 생성중...");
+                            //
+                            //                            // Create directories if they do not exist
+                            //                            xxhdpiFile.mkdirs();
+                            //                            xhdpiFile.mkdirs();
+                            //                            hdpiFile.mkdirs();
+                            //                            mdpiFile.mkdirs();
+                            //                            ldpiFile.mkdirs();
+                            //
+                            //                            // Write bitmaps to files
+                            //                            ImageIO.write(xxhdpi, "PNG", xxhdpiFile);
+                            //                            ImageIO.write(xhdpi, "PNG", xhdpiFile);
+                            //                            ImageIO.write(hdpi, "PNG", hdpiFile);
+                            //                            ImageIO.write(mdpi, "PNG", mdpiFile);
+                            //                            ImageIO.write(ldpi, "PNG", ldpiFile);
 
                             lblMessage.setText("아이콘을 성공적으로 생성하였습니다.");
                         } catch (IOException e1) {
@@ -223,12 +229,7 @@ public class IconResizer {
         //		frmAndroidIconResizer.getContentPane().add(btnDonate);
     }
 
-    BufferedImage createResizedCopy(BufferedImage originalImage,
-            int scaledWidth, int scaledHeight) {
-
-        return Scalr.resize(originalImage, Scalr.Method.ULTRA_QUALITY,
-                scaledWidth, scaledHeight, Scalr.OP_ANTIALIAS);
-
+    BufferedImage createResizedCopy(BufferedImage originalImage, int scaledWidth, int scaledHeight) {
+        return Scalr.resize(originalImage, Scalr.Method.ULTRA_QUALITY, scaledWidth, scaledHeight, Scalr.OP_ANTIALIAS);
     }
-
 }
