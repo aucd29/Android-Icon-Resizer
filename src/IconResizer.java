@@ -148,36 +148,6 @@ public class IconResizer {
                                 ImageIO.write(resizedIcon, "PNG", fp);
                             }
 
-                            //
-                            //                            BufferedImage xxhdpi = createResizedCopy(myImage, 144, 144);
-                            //                            BufferedImage xhdpi  = createResizedCopy(myImage, 96, 96);
-                            //                            BufferedImage hdpi   = createResizedCopy(myImage, 72, 72);
-                            //                            BufferedImage mdpi   = createResizedCopy(myImage, 48, 48);
-                            //                            BufferedImage ldpi   = createResizedCopy(myImage, 36, 36);
-                            //
-                            //                            // Create output files
-                            //                            File xxhdpiFile = new File(dirPath + "/drawable-xxhdpi/ic_launcher.png");
-                            //                            File xhdpiFile = new File(dirPath + "/drawable-xhdpi/ic_launcher.png");
-                            //                            File hdpiFile = new File(dirPath + "/drawable-hdpi/ic_launcher.png");
-                            //                            File mdpiFile = new File(dirPath + "/drawable-mdpi/ic_launcher.png");
-                            //                            File ldpiFile = new File(dirPath + "/drawable-ldpi/ic_launcher.png");
-                            //
-                            //                            lblMessage.setText("이미지 생성중...");
-                            //
-                            //                            // Create directories if they do not exist
-                            //                            xxhdpiFile.mkdirs();
-                            //                            xhdpiFile.mkdirs();
-                            //                            hdpiFile.mkdirs();
-                            //                            mdpiFile.mkdirs();
-                            //                            ldpiFile.mkdirs();
-                            //
-                            //                            // Write bitmaps to files
-                            //                            ImageIO.write(xxhdpi, "PNG", xxhdpiFile);
-                            //                            ImageIO.write(xhdpi, "PNG", xhdpiFile);
-                            //                            ImageIO.write(hdpi, "PNG", hdpiFile);
-                            //                            ImageIO.write(mdpi, "PNG", mdpiFile);
-                            //                            ImageIO.write(ldpi, "PNG", ldpiFile);
-
                             lblMessage.setText("아이콘을 성공적으로 생성하였습니다.");
                         } catch (IOException e1) {
                             lblMessage
