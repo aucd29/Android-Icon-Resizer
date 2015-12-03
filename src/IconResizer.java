@@ -3,8 +3,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -15,6 +15,7 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.imgscalr.Scalr;
+import org.json.JSONObject;
 
 public class IconResizer {
     private JFrame frmAndroidIconResizer;
@@ -22,6 +23,7 @@ public class IconResizer {
     private JTextField folderPath;
     private JButton folderButton;
     private Config cfg;
+    private PathCfg mPathCfg;
 
     /**
      * Launch the application.
@@ -53,6 +55,7 @@ public class IconResizer {
      */
     private void initialize() {
         cfg = new Config();
+        mPathCfg = new PathCfg();
 
         frmAndroidIconResizer = new JFrame();
         frmAndroidIconResizer.setTitle("Android Icon Resizer");
@@ -65,6 +68,7 @@ public class IconResizer {
         filePath.setBounds(25, 51, 187, 28);
         frmAndroidIconResizer.getContentPane().add(filePath);
         filePath.setColumns(10);
+        filePath.setText(mPathCfg.mSrcPath);
 
         JButton fileButton = new JButton("찾기");
         fileButton.addActionListener(new ActionListener() {
@@ -87,6 +91,7 @@ public class IconResizer {
         folderPath.setColumns(10);
         folderPath.setBounds(25, 117, 187, 28);
         frmAndroidIconResizer.getContentPane().add(folderPath);
+        folderPath.setText(mPathCfg.mTargetPath);
 
         folderButton = new JButton("찾기");
         folderButton.addActionListener(new ActionListener() {
@@ -126,6 +131,8 @@ public class IconResizer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!filePath.getText().isEmpty() && !folderPath.getText().isEmpty()) {
+                    mPathCfg.setPath(filePath.getText(), folderPath.getText());
+
                     File imageFile = new File(filePath.getText());
                     String dirPath = folderPath.getText();
                     if (imageFile.exists()) {
@@ -141,7 +148,7 @@ public class IconResizer {
 
                                 BufferedImage resizedIcon = createResizedCopy(myImage, size, size);
 
-                                File fp = new File(dirPath + "/drawable-" + key + "/" + cfg.iconName);
+                                File fp = new File(dirPath + "/mipmap-" + key + "/" + cfg.iconName);
                                 fp.mkdirs();
 
                                 lblMessage.setText("이미지 생성중...");
@@ -201,5 +208,71 @@ public class IconResizer {
 
     BufferedImage createResizedCopy(BufferedImage originalImage, int scaledWidth, int scaledHeight) {
         return Scalr.resize(originalImage, Scalr.Method.ULTRA_QUALITY, scaledWidth, scaledHeight, Scalr.OP_ANTIALIAS);
+    }
+
+    public class PathCfg extends CfgBase {
+        public String mSrcPath;
+        public String mTargetPath;
+
+        public PathCfg() {
+            super("path.json");
+
+            if (cfg == null) {
+                return ;
+            }
+
+            try {
+                JSONObject json = new JSONObject(cfg);
+                mSrcPath    = json.getString("srcPath");
+                mTargetPath = json.getString("targetPath");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        public boolean setPath(String src, String target) {
+            try {
+                if (mSrcPath.equals(src) && mTargetPath.equals(target)) {
+                    return true;
+                }
+
+                mSrcPath    = src;
+                mTargetPath = target;
+
+                String data = genData(src, target);
+
+                File fp = new File(".", mFileName);
+                if (fp.exists()) {
+                    FileOutputStream os = new FileOutputStream(fp);
+                    os.write(data.getBytes());
+                    os.close();
+                }
+
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
+
+        private String genData(String src, String target) {
+            try {
+                JSONObject json = new JSONObject();
+                json.put("srcPath", src);
+                json.put("targetPath", target);
+
+                return json.toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                return "{}";
+            }
+        }
+
+        @Override
+        public String defaultValue() {
+            return genData("", "");
+        }
     }
 }

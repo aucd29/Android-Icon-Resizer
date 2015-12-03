@@ -62,7 +62,8 @@ public class Config extends CfgBase {
                 "{\"name\":\"mdpi\", \"size\":48},\r\n" +
                 "{\"name\":\"hdpi\", \"size\":72},\r\n" +
                 "{\"name\":\"xhdpi\", \"size\":96},\r\n" +
-                "{\"name\":\"xxhdpi\", \"size\":144}\r\n" +
+                "{\"name\":\"xxhdpi\", \"size\":144},\r\n" +
+                "{\"name\":\"xxxhdpi\", \"size\":192}\r\n" +
                 "]\r\n" +
                 "}";
     }

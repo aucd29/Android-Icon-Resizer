@@ -25,9 +25,12 @@ public abstract class CfgBase {
     private static final String TAG = "CfgBase";
 
     protected String cfg;
+    protected String mFileName;
 
     public CfgBase(String name) {
         try {
+            mFileName = name;
+
             File fp = new File(".", name);
 
             if (!fp.exists()) {
